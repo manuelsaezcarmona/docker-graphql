@@ -18,24 +18,39 @@ jobs:
       with:
         fetch-depth: 0
     
+    - name: Git Semantic Version
+      uses: PaulHatch/semantic-version@v4.0.3
+      with: 
+         # A string which, if present in a git commit, indicates that a change represents a
+         # major (breaking) change, supports regular expressions wrapped with '/'
+        major_pattern: "major:"
+         # Same as above except indicating a minor change, supports regular expressions wrapped with '/'
+        minor_pattern: "feat:"
+         # A string to determine the format of the version output
+        format: "${major}.${minor}.${patch}-prerelease${increment}"
+      id: version
+        
     - name: Docker Login
       env:
         DOCKER_USER: ${{ secrets.DOCKER_USER }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        NEW_VERSION: ${{ steps.version.outputs.version }}
       run: |
-        echo "iniciando login...." 
+        echo "iniciando login.... version $NEW_VERSION !!!!!!!!!!!" 
         echo $DOCKER_TOKEN 
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
         echo "Finalizado login...."
     
-    - name: Build de la imagen.
-      run: |
-        echo "construyendo la imagen"
-        docker build -t lordmanu/docker-graphql:0.0.2 .
-        
-    - name: Push Imagen Docker
-      run: |
-        docker push lordmanu/docker-graphql:0.0.2
+
+                
+#    - name: Build de la imagen.
+#      run: |
+#        echo "construyendo la imagen"
+#        docker build -t lordmanu/docker-graphql:0.0.2 .
+#        
+#    - name: Push Imagen Docker
+#      run: |
+#        docker push lordmanu/docker-graphql:0.0.2
       
 #    - name: Build the Docker image
 #      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
