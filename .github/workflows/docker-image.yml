@@ -7,17 +7,14 @@ on:
     branches: [ "master" ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    
+   
     - name: Git Semantic Version
       uses: PaulHatch/semantic-version@v4.0.3
       with: 
@@ -34,23 +31,26 @@ jobs:
       env:
         DOCKER_USER: ${{ secrets.DOCKER_USER }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        NEW_VERSION: ${{ steps.version.outputs.version }}
+        
       run: |
-        echo "iniciando login.... version $NEW_VERSION !!!!!!!!!!!" 
+        echo "iniciando login...." 
         echo $DOCKER_TOKEN 
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
         echo "Finalizado login...."
     
-
-                
-#    - name: Build de la imagen.
-#      run: |
-#        echo "construyendo la imagen"
-#        docker build -t lordmanu/docker-graphql:0.0.2 .
-#        
-#    - name: Push Imagen Docker
-#      run: |
-#        docker push lordmanu/docker-graphql:0.0.2
+    - name: Build de la imagen.
+      env: 
+        NEW_VERSION: ${{ steps.version.outputs.version }}
+      run: |
+        echo "construyendo la imagen"
+        docker build -t lordmanu/docker-graphql:$NEW_VERSION .
+        
+    - name: Push Imagen Docker
+      env: 
+        NEW_VERSION: ${{ steps.version.outputs.version }}
+        
+      run: |
+        docker push lordmanu/docker-graphql:$NEW_VERSION
       
-#    - name: Build the Docker image
-#      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
