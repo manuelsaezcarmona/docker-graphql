@@ -17,6 +17,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
+    
     - name: Docker Login
       env:
         DOCKER_USER: ${{ secrets.DOCKER_USER }}
@@ -26,6 +27,15 @@ jobs:
         echo $DOCKER_TOKEN 
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
         echo "Finalizado login...."
-
+    
+    - name: Build de la imagen.
+      run: |
+        echo "construyendo la imagen"
+        docker build -t lordmanu/docker-graphql:0.0.2 .
+        
+    - name: Push Imagen Docker
+      run: |
+        docker push lordmanu/docker-graphql:0.0.2 .
+      
 #    - name: Build the Docker image
 #      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
